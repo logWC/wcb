@@ -93,8 +93,7 @@
             @ended="ended"
             ref="audioEl"
             id="audioEl"
-            >
-                对不起，你的浏览器不支持audio标签，请升级或更换浏览器进行播放
+            >对不起，你的浏览器不支持audio标签，请升级或更换浏览器进行播放
             </audio>
             <button>
                 <LikeIcon :ids="usesongplay.id" />

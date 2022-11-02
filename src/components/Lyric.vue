@@ -26,8 +26,8 @@ function timeUpdated({target}:Event){
 
 let audioEl;
 onMounted(() => {
-    audioEl = (<HTMLAudioElement>document.getElementById('audioEl'));
-    audioEl.addEventListener('timeupdate',timeUpdated)
+    audioEl = document.getElementById('audioEl');
+    (<HTMLAudioElement>audioEl).addEventListener('timeupdate',timeUpdated)
 }),
 
 onActivated(()=>{
