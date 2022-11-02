@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let str = 'qwert_/'
+        // 编码
+        function b64EncodeUnicode(str) {
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                return String.fromCharCode(p1);
+            }));
+        }
+        str = b64EncodeUnicode(str)
+        console.log(str)
+        // 解码
+        function b64DecodeUnicode(str) {
+            return decodeURIComponent(atob(str).split('').map(function(c) {
+                // console.log('%'+('00'+c.charCodeAt(0).toString(16)).slice(-2))
+                return c.charCodeAt(0).toString(16).slice(-2);
+            }).join(''));
+        }
+        str = b64DecodeUnicode(str)
+        console.log(str)
+
+
+        // 第二种方法
+        function utf8_to_b64(str) {
+        return window.btoa(unescape(encodeURIComponent(str)));
+        }
+        function b64_to_utf8(str) {
+        return decodeURIComponent(escape(window.atob(str)));
+        }
+        // Usage:
+        console.log(utf8_to_b64("✓ à la mode")); // "4pyTIMOgIGxhIG1vZGU="
+        console.log(b64_to_utf8("4pyTIMOgIGxhIG1vZGU=")); // "✓ à la mode"
+    </script>
+</body>
+</html>

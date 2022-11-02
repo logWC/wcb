@@ -1,91 +1,37 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "./components/HelloWorld.vue";
+  import { provide,ref } from "vue";
+  import { RouterView } from "vue-router";
+  import $api from '@/api/index'
+  import {useUser} from '@/stores/useUser'
+  import PlaySong from './components/PlaySong.vue'
+
+  const useuser = useUser()
+
+  $api.loginStatus()
+  .then(({data})=>{
+    if(data.data.profile.userId!==7943082392){
+      useuser.userData(data.data.profile)
+    }
+  })
+  .catch(error=>console.log(error.toString().includes('400')?'未登录':error))
+
+  // 动态修改缓存路由,使用inject有Login、Mine组件
+  const includeArr = ref(['LayoutView,LyricView']);
+  function changeInclude(arr:string[]){
+    includeArr.value = arr;
+  }
+  provide('changeInclude',changeInclude)
+
 </script>
-
 <template>
-  <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="@/assets/logo.svg"
-      width="125"
-      height="125"
-    />
+  <div>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <RouterView v-slot="{Component}">
+      <KeepAlive :include="includeArr">
+        <component :is="Component" />
+      </KeepAlive>
+    </RouterView>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+    <PlaySong />
+  </div>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>

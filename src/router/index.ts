@@ -1,23 +1,44 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
-      name: "home",
-      component: HomeView,
+      name: "login",
+      component: ()=>import('../views/LoginView.vue'),
     },
     {
-      path: "/about",
-      name: "about",
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import("../views/AboutView.vue"),
+      path: "/layout",
+      component: () => import("../views/LayoutView.vue"),
+      redirect:'/layout/home',
+      children:[
+        {path:'home',name:'home',component:()=>import('../views/LayoutHomeView.vue')},
+        {path:'topic',name:'topic',component:()=>import('../views/LayoutTopicView.vue')},
+        {path:'mine',name:'mine',component:()=>import('../views/LayoutMineView.vue')},
+        {path:'search',name:'search',component:()=>import('../views/LayoutSearchView.vue')},
+      ]
     },
+    {
+      path:'/songlist/:id/:src/:title?/:name?',
+      name:'SongListView',
+      component:()=>import('../views/SongListView.vue')
+    },
+    {
+      path:'/likes',
+      name:'likes',
+      component:()=>import('../views/LikesView.vue')
+    },
+    {
+      path:'/lyric',
+      name:'lyric',
+      component:()=>import('../views/LyricView.vue')
+    }
+
   ],
+  scrollBehavior(to,from,savedPosition){
+    return {top:0}
+  }
 });
 
 export default router;
