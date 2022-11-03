@@ -20,6 +20,7 @@ export const useUser = defineStore('user', ()=>{
     let songs = await $api.songDetail(likeIdList)
     .then(({data})=>data.songs)
     
+    likeList.length = 0;
     likeIdList.forEach((val:any,index:number) => {
       likeIdObj[val] = val
       likeList.push(songs[index])
