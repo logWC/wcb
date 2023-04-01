@@ -1,12 +1,11 @@
 <script setup lang="ts">
-    import { ref, onBeforeUnmount, getCurrentInstance, inject } from "vue";
+    import { ref, onBeforeUnmount,computed } from "vue";
     import { useRouter } from "vue-router";
     import { useUser } from "@/stores/useUser";
     import LoginQr from './LoginQr.vue'
     import LoginPa from './LoginPa.vue'
+    import $api from '@/api/index'
 
-    // 获取api
-    const {$api}:any = getCurrentInstance()?.proxy;
     // 获取路由
     const router = useRouter();
     // 获取store
@@ -17,77 +16,65 @@
     let captcha = ref(null);
     let loginBoolean = ref(3);
     let error = ref('');
-    let timeout:number;
-    
-    let signIn = ref(false);
-    function loginStatus(){
-        if(useuser.profile==null){
-            $api.loginStatus()
-            .then(({data}:any)=>{
-                if(data.data.profile.userId !== 7943082392){
-                    useuser.userData(data.data.profile)
-                    router.replace('/layout/home')
-                }else{
-                    signIn.value=true
-                    qr()
-                }
-            })
-            .catch((error:any)=>{
-                signIn.value=true
-                qr()
-            })
-        }else{
-            router.replace('/layout/home')
-        }
-    }
-    loginStatus()
-
+    let timeoutBoo = true
     let loginKey='';
     let src = ref('');
-    async function qr():Promise<void>{
+    // 添加主页路由到缓存数组
+    useuser.changeCacheRouter('defined')
+    // watch signIn，跳转路由、启动初始轮询
+    let boo = computed(()=>{
+        if(useuser.signIn){
+            router.replace('/layout/home')
+        }else{
+            qr()
+        }
+        return useuser.signIn
+    })
+    // 转换登录方式
+    function pa(num:number){
+        loginBoolean.value = num
+        error.value = ''
+        timeoutBoo = false
+        console.log(234)
+    };
+    // 轮询二维码
+    function loginCheck() {
+        if (!timeoutBoo) return
+        $api.qrCheck(loginKey)
+        .then(({data}:any)=>{
+            if(data.code==803){
+                useuser.getUserStatus()
+            }
+            else if(data.code==802 || data.code==801){
+                if(loginBoolean.value == 3){
+                    window.setTimeout(loginCheck,2000)
+                }
+            }
+            else if(data.code==800){
+                console.log('二维码过期了')
+                loginKey = ''
+                loginBoolean.value==3&&qr()
+            }
+        })
+    }
+    // 二维码登录
+    async function qr(){
+        console.log('正在qr')
         if(loginKey==''){
-            loginKey = await $api.qrKey()
-            .then((content:any)=>content.data.data.unikey)
-            src.value = await $api.qrCreate(loginKey)
-            .then((content:any)=>content.data.data.qrimg)
+            try{
+                loginKey = await $api.qrKey()
+                .then((content:any)=>content.data.data.unikey)
+                src.value = await $api.qrCreate(loginKey)
+                .then((content:any)=>content.data.data.qrimg)
+            }catch(err){
+                console.log(err)
+            }
         }
         loginBoolean.value = 3
         error.value = ''
-        const loginCheck = ()=>{
-            if (!signIn.value) return
-            $api.qrCheck(loginKey)
-            .then(({data}:any)=>{
-                if(data.code==803){
-                    loginStatus()
-                }
-                else if(data.code==802 || data.code==801){
-                    if(loginBoolean.value == 3){
-                        timeout = window.setTimeout(loginCheck,2000)
-                    }
-                }
-                else if(data.code==800){
-                    console.log('二维码过期了')
-                    loginKey = ''
-                    loginBoolean.value==3&&qr()
-                }
-            })
-        }
         loginCheck()
     };
-    function pa(num:number):void{
-        window.clearTimeout(timeout)
-            loginBoolean.value = num;
-            error.value = ''
-    };
-    function login(){
-        $api.logon(phone.value,password.value,captcha.value)
-        .then(({data}:any) => {
-            useuser.userData(data.profile)
-            // this.$store.dispatch('profiles/userData',data.profile)
-            router.replace('/layout/home')
-        })
-        .catch((error:any) => error.value = '密码或手机号出错')
-    };
+    // 验证手机号
     function vcMe(){
         //定义正则表达式
         var reg='^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-9])|(18[0-9])|166|198|199|191|(147))\\d{8}$';
@@ -101,6 +88,7 @@
             error.value = '请输入正确的手机号';
         }
     };
+    // 验证验证码
     function verify(){
         if(loginBoolean.value==2){
             $api.captchaVerify(phone.value,captcha.value)
@@ -110,18 +98,30 @@
             login()
         }
     };
+    // 密码登录
+    function login(){
+        $api.logon(phone.value,password.value,captcha.value)
+        .then(({data}:any) => {
+            useuser.userData(data.profile)
+        })
+        .catch((error:any) => error.value = '密码或手机号出错')
+    };
+    // 游客登录
+    function regiterAnonimous(){
+        $api.regiterAnonimous()
+        .then(({data})=>{
+            useuser.changeSignIn(true)
+        })
+    };
+    // 清除二维码登录轮询
     onBeforeUnmount(() => {
-        // 添加主页路由到缓存数组
-        const changeInclude = (inject('changeInclude') as (arr:string[])=>void)
-        changeInclude(['LayoutView,LyricView'])
         // 清除正在进行的或定时回调已经进入主栈的定时器
-        window.clearTimeout(timeout);
-        signIn.value = false;
+        timeoutBoo = false
     })
 
 </script>
 <template>
-    <div class="signIn" v-if="signIn">
+    <div class="signIn" v-if="!boo">
         <div class="user">
             <h3>网易云登录</h3>
                 <div class="switch-login">
@@ -138,11 +138,11 @@
                     <button v-if="loginBoolean!=3" @click="verify">登录</button>
                 </div>
                 <div class="switch-button">
-                    <login-qr v-if="loginBoolean!=3" @click.native='qr' />
+                    <login-qr v-if="loginBoolean!=3" @click.native='()=>{timeoutBoo = true;qr()}' />
                     <login-pa v-if="loginBoolean!=1" @click.native='pa(1)' str="密码登录" />
                     <login-pa v-if="loginBoolean!=2" @click.native='pa(2)' str="验证码登录" />
                 </div>
-            <span class="tourist" @click="$router.replace('/layout/home')">游客</span>
+            <span class="tourist" @click="regiterAnonimous">游客</span>
         </div>
         <p> 网站仅供学习使用</p>
     </div>
