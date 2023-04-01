@@ -1,11 +1,11 @@
 <script setup lang="ts">
-    defineProps<{
+    const props = defineProps<{
         str:string
     }>();
 </script>
 <template>
     <div>
-        <h4 v-cloak>{{str}}</h4>
+        <h4 v-cloak>{{props.str}}</h4>
     </div>
 </template>
 <style scoped>
