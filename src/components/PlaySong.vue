@@ -13,15 +13,13 @@
     let audioEl=ref(),int:number;
     // 播放、暂停
     function changePlayStatus(){
-        audioEl.value.paused?audioEl.value.src&&audioEl.value.play():audioEl.value.pause()
+        audioEl.value.paused?audioEl.value.src&&play():audioEl.value.pause()
     }
     // 播放结束
     function ended(){
         if(usesongplay.orderNum===0){
             // 单曲循环
-            let src = audioEl.value.src
-            audioEl.value.src = null
-            setTimeout(()=>audioEl.value.src=src,200)
+            play()
         }else{
             usesongplay.idIndex++;
         }
@@ -34,7 +32,8 @@
             if(!data.success){
                 usesongplay.clearMe(2)
             }else{
-                usesongplay.clickPlayList(usesongplay.id)
+                console.log('start update src')
+                usesongplay.updateSrc()
             }
         })
     }
@@ -48,16 +47,20 @@
     function wearOut(time:number){
         setTime = window.setTimeout(()=>show.value=false,time)
     }
+    function play() {
+        int = window.setInterval(()=>{
+                if(audioEl.value.readyState==4){
+                    window.clearInterval(int);
+                    audioEl.value.play()
+                }
+            },200)
+    }
+    // 监听src：更新src、处理src出错
     watch(()=>usesongplay.src,(val)=>{
         suspendBoolean.value = false;  // 加载状态
         audioEl.value.src = val;
         if(val){
-            int = window.setInterval(()=>{
-                if(audioEl.value.readyState==4){
-                    window.clearInterval(int);
-                    changePlayStatus()
-                }
-            },500)
+            play()
         }else{
             audioEl.value.load()
         }
@@ -93,7 +96,7 @@
             @ended="ended"
             ref="audioEl"
             id="audioEl"
-            >对不起，你的浏览器不支持audio标签，请升级或更换浏览器进行播放
+            >对不起,你的浏览器不支持audio标签,请升级或更换浏览器进行播放
             </audio>
             <button>
                 <LikeIcon :ids="usesongplay.id" />
@@ -106,39 +109,39 @@
     </div>
 </template>
 <style scoped>
-    .bodyr{
-        position: fixed;
-        width: 100%;
-        transition: all 0.3s;
-    }
+.bodyr{
+    position: fixed;
+    width: 100%;
+    transition: all 0.3s;
+}
+.whole1{
+    bottom: -53px;
+}
+.whole2{
+    bottom: 0px;
+}
+@media screen and (max-aspect-ratio:1/1) {
     .whole1{
-        bottom: -50px;
-    }
-    .whole2{
         bottom: 0px;
     }
-    @media screen and (max-aspect-ratio:1/1) {
-        .whole1{
-            bottom: 0px;
-        }
-    }
-    .thead{
-        display: flex;
-        height: 50px;
-        box-shadow: 0px -1px 5px #333;
-        background-color: white;
-    }
-    .thead audio{
-        flex-grow: 1;
-        height: inherit;
-        background-color: inherit;
-    }
-    .thead button{
-        background-color: inherit;
-        border: none;
-    }
-    .thead img{
-        width: 50px;
-        height: 50px;
-    }
+}
+.thead{
+    display: flex;
+    height: 50px;
+    box-shadow: 0px -1px 5px #333;
+    background-color: white;
+}
+.thead audio{
+    flex-grow: 1;
+    height: inherit;
+    background-color: inherit;
+}
+.thead button{
+    background-color: inherit;
+    border: none;
+}
+.thead img{
+    width: 50px;
+    height: 50px;
+}
 </style>
