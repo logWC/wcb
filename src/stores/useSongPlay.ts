@@ -2,6 +2,7 @@ import {ref, computed} from 'vue'
 import type {Ref} from 'vue'
 import { defineStore } from "pinia";
 import $api from "@/api/index";
+import {useNotification} from '@/components/useNotification'
 
 let canvas = document.createElement("canvas");
 let measureText = (canvas.getContext('2d') as CanvasRenderingContext2D);
@@ -66,9 +67,11 @@ export const useSongPlay = defineStore('songPlay', ()=>{
     // 播放列表组件逻辑，点击播放时，可能需要改变播放顺序
     function clickPlayList(i:number){
         console.log('开始点击播放')
-        id.value = i
-        orderNum.value==2&&changePlayList(playList.value)
-        getSongInfo(i)
+        if(id.value!==i){
+            id.value = i
+            orderNum.value==2&&changePlayList(playList.value)
+            getSongInfo(i)
+        }
     }
 
     // 获取歌曲信息
@@ -85,6 +88,8 @@ export const useSongPlay = defineStore('songPlay', ()=>{
                 src.value = src_.data.data[0].url
                 url.value = url_.data.songs[0].al.picUrl
                 lyricMe(lyrics.data.lrc.lyric)
+                // 系统通知
+                useNotification(url_.data.songs[0])
             }else if(src_.data.code==-462){
                 alert('请登录播放')
             }else{
@@ -95,6 +100,11 @@ export const useSongPlay = defineStore('songPlay', ()=>{
             }
         })
         .catch(error=>alert('获取歌曲信息出错，可能断网了'))
+    }
+    function updateSrc() {
+        $api.song(id.value).then(({data})=>{
+            src.value = data.data[0].url
+        })
     }
 
     // 歌词数组赋值
@@ -191,6 +201,7 @@ export const useSongPlay = defineStore('songPlay', ()=>{
         orderNum,
         orderStr,
         changeOrderNum,
-        clearMe
+        clearMe,
+        updateSrc
     }
 })

@@ -47,7 +47,19 @@ export default {
     },
     // 退出登录
     logout(){
-        return axios.get(`/api/logout`)
+        return axios.get(`/api/logout?time=${time()}`)
+    },
+    // 游客账号
+    regiterAnonimous(){
+        return axios.get(`/api/register/anonimous?time=${time()}`)
+    },
+    // 用户信息，歌单，收藏，mv，dj数量
+    userSubcount(){
+        return axios.get(`/api/user/subcount?time=${time()}`)
+    },
+    // 获取用户歌单
+    userPlaylist(uid:number,limit=30,offset=0){
+        return axios.get(`/api/user/playlist?uid=${uid}&limit=${limit}&offset=${offset}&time=${time()}`)
     },
     // 喜欢列表
     likeList<T>(id:T){
@@ -75,7 +87,7 @@ export default {
         return axios.get(`/api/playlist/track/all?id=${id}`)
     },
     // 向歌单添加歌曲
-    addSongdelSong<T>(change:T,pid:T,id:T){
+    addSongdelSong<T,K,Y>(change:T,pid:K,id:Y){
         return axios.get(`/api/playlist/tracks?op=${change}&pid=${pid}&tracks=${id}`)
     },
     // 推荐音乐（首）

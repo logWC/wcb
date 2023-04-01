@@ -1,7 +1,6 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 
-import api from "./api/index";
 import ElementPlus from 'element-plus'
 import App from "./App.vue";
 import router from "./router";
@@ -15,6 +14,5 @@ app.use(createPinia());
 app.use(router);
 app.use(ElementPlus)
 
-app.config.globalProperties.$api = api
 
 app.mount("#app");
