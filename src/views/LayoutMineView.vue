@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import Mine from "../components/Layout/Mine.vue";
+import LMMine from "../components/Layout/LMMine.vue";
 </script>
 <template>
-    <div>
-        <Mine />
-    </div>
+    <LMMine />
 </template>

@@ -1,5 +1,3 @@
 <template>
-    <div>
-        搜索
-    </div>
+    搜索
 </template>

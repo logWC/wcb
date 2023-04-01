@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import LayoutHome from "../components/Layout/LayoutHome.vue";
+import LHHome from "../components/Layout/LHHome.vue";
 
 </script>
 <template>
-    <div>
-        <LayoutHome />
-    </div>
+    <LHHome />
 </template>

@@ -2,7 +2,7 @@
     import { ref } from "vue";
     import $api from "@/api/index";
     import { useRoute } from "vue-router";
-    import SongLi from "./wheel/SongLi.vue";
+    import SongLi from "./wheel/SongLis.vue";
 
     const route = useRoute()
 

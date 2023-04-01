@@ -1,5 +1,3 @@
 <template>
-    <div>
-        榜单
-    </div>
+    榜单
 </template>

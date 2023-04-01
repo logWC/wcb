@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SongLi from '@/components/wheel/SongLi.vue'
+import SongLi from '@/components/wheel/SongLis.vue'
 import {useUser} from '@/stores/useUser'
 
 const useuser = useUser()

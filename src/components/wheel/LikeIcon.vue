@@ -7,6 +7,7 @@
         ids:number
     }>()
 
+
     const useuser = useUser()
     let icon = computed(()=>{
         return useuser.likeIdObj[props.ids]

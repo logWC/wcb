@@ -3,7 +3,5 @@ import SongList from "../components/SongList.vue";
 
 </script>
 <template>
-    <div>
-        <SongList />
-    </div>
+    <SongList />
 </template>

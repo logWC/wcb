@@ -5,9 +5,56 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        body{
+            background-color: aqua;
+            margin: 0;
+        }
+        .rot{
+            width: 500px;
+            height: 500px;
+            background-color: rgb(214, 187, 152);
+            overflow: hidden;
+        }
+        .rot div:first-of-type{
+            width: 200px;
+            height: 300px;
+            background-color: red;
+        }
+        .rot div:last-of-type{
+            height: 200px;
+            background-color: aquamarine;
+            overflow: auto;
+        }
+        p{
+            height: 300px;
+        }
+    </style>
 </head>
 <body>
+    <div class="rot">
+        <div>
+            <input type="text" id="input" />
+            <button id="buttona">buttona</button>
+            <button id="buttonb">buttonb</button>
+        </div>
+        <div>
+            <p>2</p>
+        </div>
+    </div>
     <script>
+        let input = document.querySelector('#input')
+        let buttona = document.querySelector('#buttona')
+        let buttonb = document.querySelector('#buttonb')
+        buttona.onclick = (e)=> {
+            console.log(input.value)
+            console.log(document.body.textContent)
+        }
+        buttonb.onclick= function (e) {
+            input.value='buttonb';
+        }
+    </script>
+    <!-- <script>
         let str = 'qwert_/'
         // 编码
         function b64EncodeUnicode(str) {
@@ -38,6 +85,6 @@
         // Usage:
         console.log(utf8_to_b64("✓ à la mode")); // "4pyTIMOgIGxhIG1vZGU="
         console.log(b64_to_utf8("4pyTIMOgIGxhIG1vZGU=")); // "✓ à la mode"
-    </script>
+    </script> -->
 </body>
 </html>
