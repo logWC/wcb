@@ -161,6 +161,18 @@ export default {
     toplist(){
         return axios.get('/api/toplist')
     },
+    // mv topic
+    topMv(area='全部',limit=10,offset=0){
+        return axios.get(`/api/top/mv?area=${area}&limit=${limit}&offset=${offset}`)
+    },
+    // personalized mv
+    personalizedMv(){
+        return axios.get(`/api/personalized/mv`)
+    },
+    // private fm
+    personalFm(){
+        return axios.get('/api/personal_fm')
+    },
     // 并发请求
     all<T,K>(obj1:T,obj2:K){
         return axios.all([obj1,obj2])
