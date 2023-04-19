@@ -15,7 +15,6 @@
     let canvas = ref();
     let can:CanvasRenderingContext2D;
     function canvasInitial() {
-        canvas.value.width=canvas.value.height=props.heigh
         can = (canvas.value as HTMLCanvasElement).getContext('2d') as CanvasRenderingContext2D;
         can.fillStyle = getColor(Math.random() * 360);
         requestAnimationFrame(canvasAnimation)
@@ -69,5 +68,21 @@
     })
 </script>
 <template>
-    <canvas ref="canvas"></canvas>
+    <div style="margin:0px;">
+        <div style="position: relative;">
+            <canvas
+            ref="canvas"
+            :width=props.heigh
+            :height=props.heigh
+            ></canvas>
+            <div :style="{
+            position: 'absolute',
+            top: '0px',
+            height:props.heigh+'px',
+            width:props.heigh+'px',
+            backdropFilter: 'contrast(90%) blur(50px)'
+        }"
+            ></div>
+        </div>
+    </div>
 </template>
