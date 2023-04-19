@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { ref,onMounted,watch,onBeforeUnmount } from "vue";
+    import { ref,reactive,onMounted,watch,onBeforeUnmount } from "vue";
     import { useSongPlay } from "@/stores/useSongPlay";
     import $api from "@/api/index"
     import { useRouter } from "vue-router";
@@ -9,8 +9,13 @@
     const router = useRouter();
     
     let show = ref(true);
-    let suspendBoolean = ref(false);
-    let audioEl=ref(),int:number;
+    let audioEl=ref(),int:number|null=null;
+    let playStatusIconObj = reactive<any>({
+        play:'#icon-pause',
+        pause:'#icon-play',
+        waiting:'#icon-jiazaizhong'
+    })
+    let playStatusIcon = ref(playStatusIconObj.pause);
     // 播放、暂停
     function changePlayStatus(){
         audioEl.value.paused?audioEl.value.src&&play():audioEl.value.pause()
@@ -47,21 +52,26 @@
     function wearOut(time:number){
         setTime = window.setTimeout(()=>show.value=false,time)
     }
+    // play song
     function play() {
-        int = window.setInterval(()=>{
-                if(audioEl.value.readyState==4){
-                    window.clearInterval(int);
-                    audioEl.value.play()
-                }
-            },200)
+        if(int===null){
+            int = window.setInterval(()=>{
+                    if(audioEl.value.readyState==4){
+                        window.clearInterval(int as number);
+                        int = null;
+                        audioEl.value.play()
+                    }
+                },200)
+        }
     }
     // 监听src：更新src、处理src出错
     watch(()=>usesongplay.src,(val)=>{
-        suspendBoolean.value = false;  // 加载状态
         audioEl.value.src = val;
         if(val){
+            // play song
             play()
         }else{
+            // clear audio status
             audioEl.value.load()
         }
     })
@@ -69,7 +79,7 @@
         wearOut(4000)
     })
     onBeforeUnmount(() => {
-        window.clearInterval(int);
+        window.clearInterval(int as number);
     })
     // 跳转歌词路由
     function showLyric(){
@@ -91,8 +101,10 @@
             <img @error="imgError" @click="showLyric" :src="usesongplay.url" alt="#" />
             <audio 
             @error="error"
-            @play="suspendBoolean=true"
-            @pause="suspendBoolean=false"
+            @play="playStatusIcon=playStatusIconObj.play"
+            @pause="playStatusIcon=playStatusIconObj.pause"
+            @playing="playStatusIcon=playStatusIconObj.play"
+            @waiting="playStatusIcon=playStatusIconObj.waiting"
             @ended="ended"
             ref="audioEl"
             id="audioEl"
@@ -101,9 +113,21 @@
             <button>
                 <LikeIcon :ids="usesongplay.id" />
             </button>
-            <button @click="usesongplay.idIndex--">上一首</button>
-            <button @click="changePlayStatus">{{!suspendBoolean?'播放':'暂停'}}</button>
-            <button @click="usesongplay.idIndex++">下一首</button>
+            <button @click="usesongplay.idIndex--">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-play-previous"></use>
+                </svg>
+            </button>
+            <button @click="changePlayStatus">
+                <svg class="icon" :class="{transfrom:playStatusIcon===playStatusIconObj.waiting}" aria-hidden="true">
+                    <use :xlink:href="playStatusIcon"></use>
+                </svg>
+            </button>
+            <button @click="usesongplay.idIndex++">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-play-next"></use>
+                </svg>
+            </button>
             <button @click="usesongplay.changeOrderNum">{{usesongplay.orderStr}}</button>
         </div>
     </div>
@@ -129,19 +153,35 @@
     display: flex;
     height: 50px;
     box-shadow: 0px -1px 5px #333;
-    background-color: white;
+    backdrop-filter: blur(5px);
 }
 .thead audio{
     flex-grow: 1;
     height: inherit;
-    background-color: inherit;
 }
 .thead button{
-    background-color: inherit;
-    border: none;
+    margin-left: 20px;
+}
+.thead button:first-of-type svg{
+    font-size: 1.3em;
+}
+.thead button~button svg{
+    font-size: 1.5em;
+    padding: 5px;
+    border: 2px solid rgb(163, 163, 163);
+    background-color: rgb(97, 97, 97);
+    border-radius: 30px;
 }
 .thead img{
     width: 50px;
     height: 50px;
+}
+.transfrom{
+    animation: anrotateZ .5s alternate infinite;
+}
+@keyframes anrotateZ {
+    100%{
+        transform: rotateZ(90deg);
+    }
 }
 </style>
