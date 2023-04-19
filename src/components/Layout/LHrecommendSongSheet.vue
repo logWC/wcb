@@ -1,10 +1,8 @@
 <script setup lang="ts">
-    import LeftTiele from "../wheel/LeftTiele.vue";
     import {computed} from 'vue'
     import { useRouter } from "vue-router";
 
     const router = useRouter()
-
     // 跳转歌单路由
     function clickMe(id:number,title:string,name:string,src:string):void{
         router.push({
@@ -14,7 +12,6 @@
             }
         })
     }
-    
     const props = defineProps<{
         loading:boolean
         songList:any
@@ -38,9 +35,9 @@
                 </div>
             </template>
             <template #default>
-                <LeftTiele str="定制推荐" />
+                <slot></slot>
                 <div class="bodyr">
-                    <div class="first" @click="clickMe(first.id,first.name,first.creator.nickname,first.picUrl)">
+                    <div class="first_div" @click="clickMe(first.id,first.name,first.creator.nickname,first.picUrl)">
                         <img :src="first.picUrl" alt="欧克" />
                         <p>{{first.name}}</p>
                     </div>
@@ -60,45 +57,43 @@
 </template>
 <style scoped>
 .bodyr{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+    /* ***h:w=4:7 */
     height: 400px;
-    border-radius: 2px;
+    font-size: .5em;
+    display: flex;
+    align-items: center;
+}
+.vi div{
+    /* ***h change vi img */
+    height: 45%;
+    position:relative;
     overflow: hidden;
 }
+.bodyr > div{
+    height: 80%;
+    position:relative;
+}
+.bodyr img{height: 100%;}
 .bodyr p{
-    font-size: 13px;
-    font-weight: 300;
+    opacity: 0;
+    transition: all .5s ease-out;
+    padding: 2% 3%;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    backdrop-filter: contrast(60%) blur(10px);
     overflow: hidden;
-    display: -webkit-box;
     white-space: normal;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+    display: -webkit-box;
 }
-.bodyr img{
-    width: 100%;
-    border-radius: 5px;
-    opacity: 0.9;
-}
-.first{
-    width: 45%;
-    height: 80%;
-}
-.first img{
-    width: 93%;
-}
+.bodyr div:hover > p{opacity: 1;}
 .vi{
-    width: 45%;
-    height: 80%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
     align-content: space-between;
-}
-.vi > div{
-    width: 39%;
-    height: 47%;
 }
 </style>
