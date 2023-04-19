@@ -4,7 +4,7 @@
     import FLNav from "./FLNav.vue";
     import FRNav from "./FRNav.vue";
     import Tail from "../Tail.vue";
-    import FHead from "./FTHead.vue";
+    // import FHead from "./FTHead.vue";
     import BackCan from '../wheel/BackCan.vue'
     let main = ref();
     let height = ref(0)
@@ -19,10 +19,10 @@
         <FLNav class="stick" />
         <div class="bo">
             <!-- 固定头部 -->
-            <FHead class="stick" />
-            <main ref="main" class="main">
+            <!-- <FHead class="stick" /> -->
+            <main ref="main">
                 <!-- 主体内容 -->
-                <div>
+                <div class="main">
                     <RouterView v-slot="{Component}">
                         <KeepAlive>
                             <component :is='Component' />
@@ -41,20 +41,17 @@
 .root{
     display: flex;
     justify-content: space-between;
+    overflow: clip;
+    position: relative;
+    top: 0;
     /* *** */
 }
 .bo{
     flex-grow: 1;
     border-left: 1px solid rgb(223, 223, 223);
     border-right: 1px solid rgb(223, 223, 223);
-    /* overflow: clip; */
 }
 .main{
-    position: relative;
-    overflow-x: hidden;
-    top: 0;
-}
-.main > div{
     width: 700px;
     margin: 0px 30px 60px;
 }
