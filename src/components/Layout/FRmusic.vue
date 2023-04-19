@@ -2,7 +2,6 @@
     import {ref} from "vue"
     import $api from "@/api/index";
     import { useSongPlay } from "@/stores/useSongPlay";
-    import LeftTiele from "../wheel/LeftTiele.vue";
     import {useSongName} from "@/components/useSongName";
 
     const usesongplay = useSongPlay()
@@ -38,7 +37,7 @@
             </template>
             <template #default>
                 <div>
-                    <LeftTiele str="新音乐" />
+                    <slot></slot>
                     <div
                         :style="{backgroundImage:'url('+item.picUrl+'?param=500y500'+')'}"
                         class="bodyr"
