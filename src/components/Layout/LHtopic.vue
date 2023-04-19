@@ -1,5 +1,4 @@
 <script setup lang='ts'>
-import LeftTiele from "../wheel/LeftTiele.vue";
 import SongLi from "../wheel/SongLis.vue";
 
 const props = defineProps<{
@@ -8,17 +7,15 @@ const props = defineProps<{
     loading:boolean
 }>()
 
-
-
 </script>
 <template>
     <div class="list" v-if="!props.loading">
         <div>
-            <LeftTiele str="新歌榜" />
+            <slot name="newsong"></slot>
             <SongLi :uid="3779629" :song-arr="props.new_data.songs.slice(0,10)" :topic="true" />
         </div>
         <div>
-            <LeftTiele str="热歌榜" />
+            <slot name="hotsong"></slot>
             <SongLi :uid="3778678" :song-arr="props.hot_data.songs.slice(0,10)" :topic="true" />
         </div>
     </div>
@@ -26,7 +23,7 @@ const props = defineProps<{
 <style scoped>
 .list{
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
 }
 .list > div{
     width: 45%;
