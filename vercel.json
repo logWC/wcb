@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:match*",
-      "destination": "https://home.wilinz.com:9999/:match*"
+      "destination": "https://api.wclili.vip/:match*"
     },
     { "source": "/:path*", "destination": "/index.html" }
   ]
