@@ -23,10 +23,11 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+        // target:'http://music.wclili.vip',
   server:{
     proxy:{
       '/api':{
-        target:'http://music.wclili.vip',
+        target:'https://home.wilinz.com:9999/',
         changeOrigin:true,
         rewrite:(path)=>path.replace(/^\/api/, '')
       }
